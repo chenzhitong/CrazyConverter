@@ -1,4 +1,5 @@
 ﻿using Neo;
+using Neo.Cryptography.ECC;
 using Neo.IO;
 using Neo.SmartContract;
 using Neo.VM;
@@ -35,27 +36,27 @@ namespace CrazyConverter
         /// <returns>eg:7472616e73666572</returns>
         public static string AsciiToHexString(string str)
         {
-            return Encoding.ASCII.GetBytes(str.Trim()).ToHexString();
+            return Encoding.ASCII.GetBytes(str.Trim()).Reverse().ToArray().ToHexString();
         }
 
         /// <summary>
         /// 将十六进制的小端序大整数转为十进制的大整数
         /// </summary>
-        /// <param name="hex">eg:0065cd1d00000000</param>
+        /// <param name="hex">eg:00a3e111</param>
         /// <returns>eg:300000000</returns>
         public static string HexNumberToBigInteger(string hex)
         {
             hex = hex.ToLower().Trim();
             if (!new Regex("^([0-9a-f]{2})+$").IsMatch(hex)) throw new FormatException();
 
-            return new BigInteger(hex.HexToBytes().Reverse().ToArray()).ToString();
+            return new BigInteger(hex.HexToBytes().ToArray()).ToString();
         }
 
         /// <summary>
         /// 将十进制的大整数转为十六进制的小端序大整数
         /// </summary>
         /// <param name="integer">eg:300000000</param>
-        /// <returns>eg:0065cd1d00000000</returns>
+        /// <returns>eg:00a3e111</returns>
         public static string BigIntegerToHexNumber(string integer)
         {
             BigInteger bigInteger;
@@ -147,7 +148,7 @@ namespace CrazyConverter
             {
                 throw new FormatException();
             }
-            return Encoding.ASCII.GetString(bytes);
+            return Encoding.UTF8.GetString(bytes);
         }
 
         /// <summary>
@@ -177,6 +178,18 @@ namespace CrazyConverter
                 throw new FormatException();
             }
             return new UInt160(bytes).ToAddress();
+        }
+
+        /// <summary>
+        /// 公钥转为 Neo3 地址
+        /// </summary>
+        /// <param name="base64">eg:03dab84c1243ec01ab2500e1a8c7a1546a26d734628180b0cf64e72bf776536997</param>
+        /// <returns>eg:zmFvf3Rhfg/EuAVYOvJgKiON9j8=</returns>
+        public static string PublicKeyToAddress(string pubKey)
+        {
+            if (!new Regex("^(0[23][0-9a-f]{64})+$").IsMatch(pubKey)) throw new FormatException();
+
+            return Contract.CreateSignatureContract(ECPoint.Parse(pubKey, ECCurve.Secp256r1)).Address;
         }
 
         /// <summary>
@@ -238,7 +251,6 @@ namespace CrazyConverter
             List<byte> scripts;
             try
             {
-
                 scripts = Convert.FromBase64String(base64).ToList();
             }
             catch (Exception)
