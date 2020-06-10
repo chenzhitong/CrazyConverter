@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Neo3ConversionTool
+namespace CrazyConverter
 {
     public static class Helper
     {
