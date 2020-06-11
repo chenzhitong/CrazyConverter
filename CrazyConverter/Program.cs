@@ -13,10 +13,10 @@ namespace CrazyConverter
             while (true)
             {
                 Green("请输入待转换的文本");
-                var input = Console.ReadLine();
+                var input = Console.ReadLine().Trim();
 
                 //可能是公钥
-                if (new Regex("^(0[23][0-9a-f]{64})+$").IsMatch(input))
+                if (new Regex("^0[23][0-9a-f]{64}$").IsMatch(input))
                 {
                     try
                     {
@@ -41,10 +41,10 @@ namespace CrazyConverter
                     catch (Exception) { }
                     try
                     {
-                        var output = Helper.HexStringToAscii(input);
-                        if (IsVisibleAsciiString(output))
+                        var output = Helper.HexStringToUTF8(input);
+                        if (IsSupportedAsciiString(output))
                         {
-                            Yellow("16 进制小端序字符串转 ASCII 字符串：");
+                            Yellow("16 进制小端序字符串转 UTF8 字符串：");
                             Console.WriteLine(output);
                         }
                     }
@@ -52,7 +52,7 @@ namespace CrazyConverter
                     { }
                     try
                     {
-                        var output = Helper.BigLittleEndScriptHashConversion(input);
+                        var output = Helper.BigLittleEndConversion(input);
                         Yellow("小端序转大端序：");
                         Console.WriteLine(output);
                     }
@@ -70,7 +70,7 @@ namespace CrazyConverter
                     catch (Exception) { }
                     try
                     {
-                        var output = Helper.BigLittleEndScriptHashConversion(input);
+                        var output = Helper.BigLittleEndConversion(input);
                         Yellow("大端序转小端序：");
                         Console.WriteLine(output);
                     }
@@ -106,15 +106,15 @@ namespace CrazyConverter
                 {
                     try
                     {
-                        var output = Helper.BigIntegerToBase64String(input);
-                        Yellow("正整数转 Base64 字符串：");
+                        var output = Helper.BigIntegerToHexNumber(input);
+                        Yellow("正整数转十六进制字符串：");
                         Console.WriteLine(output);
                     }
                     catch (Exception) { }
                     try
                     {
-                        var output = Helper.BigIntegerToHexNumber(input);
-                        Yellow("正整数转十六进制字符串：");
+                        var output = Helper.BigIntegerToBase64String(input);
+                        Yellow("正整数转 Base64 字符串：");
                         Console.WriteLine(output);
                     }
                     catch (Exception) { }
@@ -158,7 +158,7 @@ namespace CrazyConverter
                         try
                         {
                             var output = Helper.Base64StringToString(input);
-                            if (IsVisibleAsciiString(output))
+                            if (IsSupportedAsciiString(output))
                             {
                                 Yellow("Base64 解码：");
                                 Console.WriteLine(output);
@@ -182,8 +182,8 @@ namespace CrazyConverter
                     {
                         try
                         {
-                            var output = Helper.AsciiToHexString(input);
-                            Yellow("ASCII 字符串转十六进制字符串：");
+                            var output = Helper.UTF8ToHexString(input);
+                            Yellow("UTF8 字符串转十六进制字符串：");
                             Console.WriteLine(output);
                         }
                         catch (Exception) { }
@@ -200,9 +200,9 @@ namespace CrazyConverter
             }
         }
 
-        private static bool IsVisibleAsciiString(string input)
+        private static bool IsSupportedAsciiString(string input)
         {
-            return input.All(p => p >= ' ' && p <= '~');
+            return input.All(p => p >= ' ' && p <= '~' || p == '\r' || p == '\n');
         }
 
         private static void Green(string input)

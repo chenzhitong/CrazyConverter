@@ -17,26 +17,26 @@ namespace CrazyConverter
     public static class Helper
     {
         /// <summary>
-        /// 将十六进制的字符串转为 ASCII 字符串
+        /// 将十六进制的字符串转为 UTF8 字符串
         /// </summary>
         /// <param name="hex">eg:7472616e73666572</param>
-        /// <returns>eg:Transfer</returns>
-        public static string HexStringToAscii(string hex)
+        /// <returns>eg:transfer</returns>
+        public static string HexStringToUTF8(string hex)
         {
             hex = hex.ToLower().Trim();
             if (!new Regex("^([0-9a-f]{2})+$").IsMatch(hex)) throw new FormatException();
 
-            return Encoding.ASCII.GetString(hex.HexToBytes());
+            return Encoding.UTF8.GetString(hex.HexToBytes());
         }
 
         /// <summary>
-        /// 将 ASCII 格式的字符串转为十六进制的字符串
+        /// 将 UTF8 格式的字符串转为十六进制的字符串
         /// </summary>
-        /// <param name="str">eg:Transfer</param>
+        /// <param name="str">eg:transfer</param>
         /// <returns>eg:7472616e73666572</returns>
-        public static string AsciiToHexString(string str)
+        public static string UTF8ToHexString(string str)
         {
-            return Encoding.ASCII.GetBytes(str.Trim()).Reverse().ToArray().ToHexString();
+            return Encoding.UTF8.GetBytes(str.Trim()).ToHexString();
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace CrazyConverter
         public static string ScriptHashToAddress(string scriptHash)
         {
             scriptHash = scriptHash.ToLower().Trim();
-            if (!new Regex("^(0x)?([0-9a-f]{2})+$").IsMatch(scriptHash)) throw new FormatException();
+            if (!new Regex("^(0x)?[0-9a-f]{40}$").IsMatch(scriptHash)) throw new FormatException();
 
             byte[] data;
             if (scriptHash.StartsWith("0x"))
@@ -117,23 +117,23 @@ namespace CrazyConverter
         /// <summary>
         /// 大小端序的十六进制字节数组互转
         /// </summary>
-        /// <param name="scriptHash">eg:0x3ff68d232a60f23a5805b8c40f7e61747f6f61ce</param>
+        /// <param name="hex">eg:0x3ff68d232a60f23a5805b8c40f7e61747f6f61ce</param>
         /// <returns>eg:ce616f7f74617e0fc4b805583af2602a238df63f</returns>
-        public static string BigLittleEndScriptHashConversion(string scriptHash)
+        public static string BigLittleEndConversion(string hex)
         {
-            scriptHash = scriptHash.ToLower().Trim();
-            if (!new Regex("^(0x)?([0-9a-f]{2})+$").IsMatch(scriptHash)) throw new FormatException();
+            hex = hex.ToLower().Trim();
+            if (!new Regex("^(0x)?([0-9a-f]{2})+$").IsMatch(hex)) throw new FormatException();
 
             string result;
-            if (scriptHash.StartsWith("0x"))
-                result = scriptHash.Substring(2).HexToBytes().Reverse().ToArray().ToHexString(); // big => little
+            if (hex.StartsWith("0x"))
+                result = hex.Substring(2).HexToBytes().Reverse().ToArray().ToHexString(); // big => little
             else
-                result = "0x" + scriptHash.HexToBytes().Reverse().ToArray().ToHexString();
+                result = "0x" + hex.HexToBytes().Reverse().ToArray().ToHexString();
             return result;
         }
 
         /// <summary>
-        /// Base64 格式的字符串转为 ASCII 字符串
+        /// Base64 格式的字符串转为 UTF8 字符串
         /// </summary>
         /// <param name="base64">eg:SGVsbG8gV29ybGQh</param>
         /// <returns>eg:Hello World!</returns>
@@ -152,13 +152,13 @@ namespace CrazyConverter
         }
 
         /// <summary>
-        /// ASCII 字符串转为 Base64 格式的字符串
+        /// UTF8 字符串转为 Base64 格式的字符串
         /// </summary>
         /// <param name="str">eg:Hello World!</param>
         /// <returns>eg:SGVsbG8gV29ybGQh</returns>
         public static string StringToBase64String(string str)
         {
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes(str.Trim()));
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(str.Trim()));
         }
 
         /// <summary>
@@ -172,6 +172,7 @@ namespace CrazyConverter
             try
             {
                 bytes = Convert.FromBase64String(base64.Trim());
+                if(bytes.Length != 20) throw new FormatException();
             }
             catch (Exception)
             {
@@ -184,7 +185,7 @@ namespace CrazyConverter
         /// 公钥转为 Neo3 地址
         /// </summary>
         /// <param name="base64">eg:03dab84c1243ec01ab2500e1a8c7a1546a26d734628180b0cf64e72bf776536997</param>
-        /// <returns>eg:zmFvf3Rhfg/EuAVYOvJgKiON9j8=</returns>
+        /// <returns>eg:Nd9NceysETPT9PZdWRTeQXJix68WM2x6Wv</returns>
         public static string PublicKeyToAddress(string pubKey)
         {
             if (!new Regex("^(0[23][0-9a-f]{64})+$").IsMatch(pubKey)) throw new FormatException();
@@ -195,8 +196,8 @@ namespace CrazyConverter
         /// <summary>
         ///  Neo3 地址转为 Base64 格式的脚本哈希
         /// </summary>
-        /// <param name="address">eg:zmFvf3Rhfg/EuAVYOvJgKiON9j8=</param>
-        /// <returns>eg:NejD7DJWzD48ZG4gXKDVZt3QLf1fpNe1PF</returns>
+        /// <param name="address">eg:NejD7DJWzD48ZG4gXKDVZt3QLf1fpNe1PF</param>
+        /// <returns>eg:zmFvf3Rhfg/EuAVYOvJgKiON9j8=</returns>
         public static string AddressToBase64String(string address)
         {
             return Convert.ToBase64String(address.Trim().ToScriptHash().ToArray());
@@ -225,7 +226,6 @@ namespace CrazyConverter
         /// 十进制大整数转为 Base64 字符串
         /// </summary>
         /// <param name="integer">eg:12345678900000000</param>
-        /// <returns>eg:AHVYXVTcKw==</returns>
         public static string BigIntegerToBase64String(string integer)
         {
             BigInteger bigInteger;
@@ -241,11 +241,11 @@ namespace CrazyConverter
         }
 
         /// <summary>
-        /// 将 Base64 格式的脚本转为易读的 OpCode。
+        /// 将 Base64 格式的脚本转为易读的 OpCode
         /// 参考：https://github.com/chenzhitong/OpCodeConverter
         /// </summary>
         /// <param name="base64">Base64 编码的 scripts</param>
-        /// <returns>List\<string\> 格式的 OpCode 列表</returns>
+        /// <returns>List&lt;string&gt; 类型的 OpCode 及操作数</returns>
         public static List<string> ScriptsToOpCode(string base64)
         {
             List<byte> scripts;
