@@ -25,10 +25,31 @@ namespace CrazyConverter
                         Console.WriteLine(output);
                     }
                     catch (Exception) { }
+                    try
+                    {
+                        var output = Helper.AddressToScriptHash(Helper.PublicKeyToAddress(input)).big;
+                        Yellow("公钥转脚本哈希（大端序）:");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
+                    try
+                    {
+                        var output = Helper.AddressToScriptHash(Helper.PublicKeyToAddress(input)).little;
+                        Yellow("公钥转脚本哈希（小端序）:");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
                 }
                 //可能是 16 进制小端序字符串
                 else if (new Regex("^([0-9a-f]{2})+$").IsMatch(input))
                 {
+                    try
+                    {
+                        var output = Helper.ScriptHashToAddress(input);
+                        Yellow("脚本哈希转 Neo3 地址：");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
                     try
                     {
                         var output = Helper.HexNumberToBigInteger(input);
