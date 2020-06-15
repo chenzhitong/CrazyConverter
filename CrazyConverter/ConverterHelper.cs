@@ -188,6 +188,7 @@ namespace CrazyConverter
         /// <returns>eg:Nd9NceysETPT9PZdWRTeQXJix68WM2x6Wv</returns>
         public static string PublicKeyToAddress(string pubKey)
         {
+            pubKey = pubKey.ToLower().Trim();
             if (!new Regex("^(0[23][0-9a-f]{64})+$").IsMatch(pubKey)) throw new FormatException();
 
             return Contract.CreateSignatureContract(ECPoint.Parse(pubKey, ECCurve.Secp256r1)).Address;

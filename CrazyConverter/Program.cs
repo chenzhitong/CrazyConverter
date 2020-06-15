@@ -16,7 +16,7 @@ namespace CrazyConverter
                 var input = Console.ReadLine().Trim();
 
                 //可能是公钥
-                if (new Regex("^0[23][0-9a-f]{64}$").IsMatch(input))
+                if (new Regex("^0[23][0-9a-f]{64}$").IsMatch(input.ToLower()))
                 {
                     try
                     {
@@ -52,7 +52,7 @@ namespace CrazyConverter
                     catch (Exception) { }
                 }
                 //可能是 16 进制小端序字符串
-                else if (new Regex("^([0-9a-f]{2})+$").IsMatch(input))
+                else if (new Regex("^([0-9a-f]{2})+$").IsMatch(input.ToLower()))
                 {
                     try
                     {
@@ -91,7 +91,7 @@ namespace CrazyConverter
                     catch (Exception) { }
                 }
                 //可能是 16 进制大端序字符串
-                else if (new Regex("^0x([0-9a-f]{2})+$").IsMatch(input))
+                else if (new Regex("^0x([0-9a-f]{2})+$").IsMatch(input.ToLower()))
                 {
                     try
                     {
