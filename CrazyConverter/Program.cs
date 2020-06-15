@@ -240,25 +240,25 @@ namespace CrazyConverter
                         }
                         catch (Exception) { }
                     }
+                }
 
-                    //当做普通字符串处理
-                    if (true)
+                //当做普通字符串处理
+                if (true)
+                {
+                    try
                     {
-                        try
-                        {
-                            var output = Helper.UTF8ToHexString(input);
-                            Yellow("UTF8 字符串转十六进制字符串：");
-                            Console.WriteLine(output);
-                        }
-                        catch (Exception) { }
-                        try
-                        {
-                            var output = Helper.StringToBase64String(input);
-                            Yellow("Base64 编码：");
-                            Console.WriteLine(output);
-                        }
-                        catch (Exception) { }
+                        var output = Helper.UTF8ToHexString(input);
+                        Yellow("UTF8 字符串转十六进制字符串：");
+                        Console.WriteLine(output);
                     }
+                    catch (Exception) { }
+                    try
+                    {
+                        var output = Helper.StringToBase64String(input);
+                        Yellow("Base64 编码：");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
                 }
                 Console.WriteLine();
             }
