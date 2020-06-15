@@ -262,6 +262,26 @@ namespace CrazyConverter
         }
 
         /// <summary>
+        /// HEX 私钥转 WIF
+        /// </summary>
+        /// <param name="hex">HEX 格式的私钥</param>
+        /// <returns>WIF 格式的私钥</returns>
+        public static string HexPrivateKeyToWIF(string hex)
+        {
+            string output;
+            try
+            {
+                var account = new KeyPair(hex.HexToBytes());
+                output = account.Export();
+            }
+            catch (Exception)
+            {
+                throw new FormatException();
+            }
+            return output;
+        }
+
+        /// <summary>
         /// 将 Base64 格式的脚本转为易读的 OpCode
         /// 参考：https://github.com/chenzhitong/OpCodeConverter
         /// </summary>

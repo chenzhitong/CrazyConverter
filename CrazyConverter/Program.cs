@@ -40,6 +40,17 @@ namespace CrazyConverter
                     }
                     catch (Exception) { }
                 }
+                //可能是 16 进制私钥
+                else if (new Regex("^[0-9a-f]{64}$").IsMatch(input))
+                {
+                    try
+                    {
+                        var output = Helper.HexPrivateKeyToWIF(input);
+                        Yellow("16 进制私钥转 WIF 私钥：");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
+                }
                 //可能是 16 进制小端序字符串
                 else if (new Regex("^([0-9a-f]{2})+$").IsMatch(input))
                 {
@@ -122,7 +133,7 @@ namespace CrazyConverter
                     }
                     catch (Exception) { }
                 }
-                //可能是私钥
+                //可能是 WIF 私钥
                 else if (new Regex("^(L|K)[1-9a-km-zA-HJ-Z]{51}$").IsMatch(input))
                 {
                     try
