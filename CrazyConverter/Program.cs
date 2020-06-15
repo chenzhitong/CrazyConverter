@@ -165,8 +165,63 @@ namespace CrazyConverter
                     }
                     catch (Exception) { }
                 }
+                //可能是 Base64 格式的字符串 或 普通字符串
+                else if (new Regex("^([0-9a-zA-Z/+=]{4})+$").IsMatch(input))
+                {
+                    try
+                    {
+                        var output = Helper.Base64StringToAddress(input);
+                        Yellow("Base64 脚本哈希转 Neo 3 地址：");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
+                    try
+                    {
+                        var output = Helper.AddressToScriptHash(Helper.Base64StringToAddress(input)).little;
+                        Yellow("Base64 脚本哈希转脚本哈希（小端序）:");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
+                    try
+                    {
+                        var output = Helper.AddressToScriptHash(Helper.Base64StringToAddress(input)).big;
+                        Yellow("Base64 脚本哈希转脚本哈希（大端序）:");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
+                    try
+                    {
+                        var output = Helper.Base64StringToBigInteger(input);
+                        if (new Regex("^[0-9]{1,20}$").IsMatch(output))
+                        {
+                            Yellow("Base64 格式的字符串转大整数：");
+                            Console.WriteLine(output);
+                        }
+                    }
+                    catch (Exception) { }
+                    try
+                    {
+                        var output = Helper.Base64StringToString(input);
+                        if (IsSupportedAsciiString(output))
+                        {
+                            Yellow("Base64 解码：");
+                            Console.WriteLine(output);
+                        }
+                    }
+                    catch (Exception) { }
+                    try
+                    {
+                        var output = Helper.ScriptsToOpCode(input);
+                        if (output.Count > 0)
+                        {
+                            Yellow("脚本转 OpCode：");
+                            output.ForEach(p => Console.WriteLine(p));
+                        }
+                    }
+                    catch (Exception) { }
+                }
                 //可能是正整数
-                else if (new Regex("^\\d+$").IsMatch(input))
+                if (new Regex("^\\d+$").IsMatch(input))
                 {
                     try
                     {
@@ -182,64 +237,6 @@ namespace CrazyConverter
                         Console.WriteLine(output);
                     }
                     catch (Exception) { }
-                }
-                else
-                {
-                    //可能是 Base64 格式的字符串 或 普通字符串
-                    if (new Regex("^([0-9a-zA-Z/+=]{4})+$").IsMatch(input))
-                    {
-                        try
-                        {
-                            var output = Helper.Base64StringToAddress(input);
-                            Yellow("Base64 脚本哈希转 Neo 3 地址：");
-                            Console.WriteLine(output);
-                        }
-                        catch (Exception) { }
-                        try
-                        {
-                            var output = Helper.AddressToScriptHash(Helper.Base64StringToAddress(input)).little;
-                            Yellow("Base64 脚本哈希转脚本哈希（小端序）:");
-                            Console.WriteLine(output);
-                        }
-                        catch (Exception) { }
-                        try
-                        {
-                            var output = Helper.AddressToScriptHash(Helper.Base64StringToAddress(input)).big;
-                            Yellow("Base64 脚本哈希转脚本哈希（大端序）:");
-                            Console.WriteLine(output);
-                        }
-                        catch (Exception) { }
-                        try
-                        {
-                            var output = Helper.Base64StringToBigInteger(input);
-                            if (new Regex("^[0-9]{1,20}$").IsMatch(output))
-                            {
-                                Yellow("Base64 格式的字符串转大整数：");
-                                Console.WriteLine(output);
-                            }
-                        }
-                        catch (Exception) { }
-                        try
-                        {
-                            var output = Helper.Base64StringToString(input);
-                            if (IsSupportedAsciiString(output))
-                            {
-                                Yellow("Base64 解码：");
-                                Console.WriteLine(output);
-                            }
-                        }
-                        catch (Exception) { }
-                        try
-                        {
-                            var output = Helper.ScriptsToOpCode(input);
-                            if (output.Count > 0)
-                            {
-                                Yellow("脚本转 OpCode：");
-                                output.ForEach(p => Console.WriteLine(p));
-                            }
-                        }
-                        catch (Exception) { }
-                    }
                 }
 
                 //当做普通字符串处理
