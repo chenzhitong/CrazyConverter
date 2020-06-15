@@ -122,6 +122,38 @@ namespace CrazyConverter
                     }
                     catch (Exception) { }
                 }
+                //可能是私钥
+                else if (new Regex("^(L|K)[1-9a-km-zA-HJ-Z]{51}$").IsMatch(input))
+                {
+                    try
+                    {
+                        var output = Helper.PrivateKeyToPublicKey(input);
+                        Yellow("私钥转公钥:");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
+                    try
+                    {
+                        var output = Helper.PublicKeyToAddress(Helper.PrivateKeyToPublicKey(input));
+                        Yellow("私钥转 Neo3 地址：");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
+                    try
+                    {
+                        var output = Helper.AddressToScriptHash(Helper.PublicKeyToAddress(Helper.PrivateKeyToPublicKey(input))).big;
+                        Yellow("私钥转脚本哈希（大端序）:");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
+                    try
+                    {
+                        var output = Helper.AddressToScriptHash(Helper.PublicKeyToAddress(Helper.PrivateKeyToPublicKey(input))).little;
+                        Yellow("私钥转脚本哈希（小端序）:");
+                        Console.WriteLine(output);
+                    }
+                    catch (Exception) { }
+                }
                 //可能是正整数
                 else if (new Regex("^\\d+$").IsMatch(input))
                 {

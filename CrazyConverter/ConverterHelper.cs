@@ -241,6 +241,27 @@ namespace CrazyConverter
         }
 
         /// <summary>
+        /// WIF 私钥转公钥
+        /// </summary>
+        /// <param name="wif">WIF 格式的私钥</param>
+        /// <returns>小端序公钥</returns>
+        public static string PrivateKeyToPublicKey(string wif)
+        {
+            string output;
+            try
+            {
+                var privateKey = Wallet.GetPrivateKeyFromWIF(wif);
+                var account = new KeyPair(privateKey);
+                output = account.PublicKey.ToArray().ToHexString();
+            }
+            catch (Exception)
+            {
+                throw new FormatException();
+            }
+            return output;
+        }
+
+        /// <summary>
         /// 将 Base64 格式的脚本转为易读的 OpCode
         /// 参考：https://github.com/chenzhitong/OpCodeConverter
         /// </summary>
